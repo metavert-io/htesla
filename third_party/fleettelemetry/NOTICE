@@ -1,0 +1,19 @@
+Vendored from github.com/teslamotors/fleet-telemetry (v0.9.4)
+Copyright Tesla, Inc. — licensed under the Apache License, Version 2.0
+(see LICENSE in this directory).
+
+Files:
+  prod_ca.crt  — config/files/prod_ca.crt, copied verbatim (sha256
+                 c572d41d96b106fb20519e7fca3ab70693772aa96d6bab564073bacb097e3282;
+                 identical in v0.9.5). The CA bundle the reference
+                 fleet-telemetry server uses to verify vehicles' client
+                 certificates.
+
+Why copied rather than imported: the bundle is embedded in the
+fleet-telemetry `config` package, which also imports Kafka, ZeroMQ and
+cloud-provider SDKs (cgo), and this ember builds static binaries with
+CGO_ENABLED=0. Everything else from fleet-telemetry (protos, messages,
+telemetry, logger) is imported as a normal Go module dependency, and
+vehicle-command's public pkg/sign + pkg/protocol are imported likewise.
+
+Modifications: none. ca.go (the embedding wrapper) is this project's own.

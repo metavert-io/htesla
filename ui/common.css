@@ -1,0 +1,27 @@
+/* Shared by the Desk widget and the Drives page. The shell hands over
+   --bg --ink --ink-faint --accent --line (and --chart-*); these are the
+   stand-alone defaults. Status colours mix toward the ink so they read
+   in both themes. */
+:root {
+  color-scheme: light dark;
+  --bg: #faf7f2; --ink: #2a2420; --ink-faint: #6b625b; --accent: #c8642c; --line: #e6ded3;
+  --surface: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  --faint-ink: color-mix(in srgb, var(--ink-faint) 72%, var(--ink));
+  --ok: #2f8a5b; --ok-ink: color-mix(in srgb, var(--ok) 72%, var(--ink));
+  --serif: ui-serif, "Iowan Old Style", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-framed]) { --bg: #16130f; --ink: #efe7dc; --ink-faint: #a39889; --accent: #e8833a; --line: #352e26; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 14px/1.5 var(--sans); }
+.faint { color: var(--faint-ink); }
+.mono { font-family: var(--mono); }
+.okc { color: var(--ok-ink); }
+.spinner { display: inline-block; width: 11px; height: 11px; border: 2px solid var(--line); border-top-color: var(--accent);
+           border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -1px; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

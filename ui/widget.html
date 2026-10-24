@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Tesla</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  body { padding: 10px 12px; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .name { font: 600 15px var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seen { font-size: 11px; white-space: nowrap; }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--faint-ink); margin-right: 5px; vertical-align: 1px; }
+  .dot.on { background: var(--ok); }
+  .soc { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; }
+  .pct { font: 600 26px/1 var(--serif); min-width: 3.2ch; }
+  .bar { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 10%, transparent); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  .bar.charging i { background: var(--ok); }
+  .line { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .more { font-size: 11px; }
+</style>
+</head>
+<body>
+<div id="w"><p class="faint"><span class="spinner"></span>waiting for your car…</p></div>
+<script src="hearth.js"></script>
+<script>
+(() => {
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ago = (t) => {
+    const s = (Date.now() - Date.parse(t)) / 1000;
+    if (!isFinite(s)) return "";
+    if (s < 90) return "just now";
+    if (s < 3600) return `${Math.round(s / 60)} min ago`;
+    if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+    return `${Math.round(s / 86400)} d ago`;
+  };
+  const when = (iso) => {
+    const d = new Date(iso);
+    const today = new Date().toDateString() === d.toDateString();
+    return today ? d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+      : d.toLocaleDateString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
+  };
+  const dist = (m) => `${(m / 1609.344).toFixed(1)} mi · ${(m / 1000).toFixed(1)} km`;
+  function render(sum) {
+    const el = document.getElementById("w");
+    const cars = (sum && sum.cars) || [];
+    if (!cars.length) {
+      el.innerHTML = `<p class="faint">No data from your car yet — set up streaming on the Tesla page.</p>`;
+      return;
+    }
+    const c = cars[0];
+    const soc = c.battery != null ? Math.round(c.battery) : null;
+    const plug = c.charging ? `<span class="okc">charging</span>` : c.plugged_in ? "plugged in" : "not plugged in";
+    let where;
+    if (c.driving) where = "Driving now";
+    else if (c.place) where = `Parked at ${esc(c.place)}`;
+    else if (c.lat != null) where = `Parked near <span class="mono">${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>`;
+    else where = `<span class="faint">Location not reported yet</span>`;
+    const d = c.last_drive;
+    const last = d ? `Last drive ${esc(when(d.end))} · ${esc(dist(d.distance_m))}${d.energy_kwh != null ? ` · ${d.energy_kwh.toFixed(1)} kWh` : ""}`
+      : `<span class="faint">No drives recorded yet</span>`;
+    el.innerHTML = `
+      <div class="head"><span class="name">${esc(c.name)}${c.model && c.model !== c.name ? ` <span class="faint" style="font:13px var(--sans)">${esc(c.model)}</span>` : ""}</span>
+        <span class="seen faint"><span class="dot ${c.online ? "on" : ""}"></span>${c.online ? "online" : c.last_seen ? esc(ago(c.last_seen)) : "offline"}</span></div>
+      <div class="soc"><span class="pct">${soc != null ? soc + "%" : "—"}</span>
+        <span class="bar ${c.charging ? "charging" : ""}"><i style="width:${soc != null ? Math.max(2, Math.min(100, soc)) : 0}%"></i></span></div>
+      <div class="line">${plug}${c.range_km != null ? ` · <span class="faint">${Math.round(c.range_km / 1.609344)} mi range</span>` : ""}</div>
+      <div class="line">${where}</div>
+      <div class="line faint">${last}</div>
+      ${cars.length > 1 ? `<div class="more faint">+ ${cars.length - 1} more car${cars.length > 2 ? "s" : ""} on the Tesla page</div>` : ""}`;
+  }
+  window.hearth.then(async (h) => {
+    const load = async () => { try { render(await h.kv("summary")); } catch { /* keep the last view */ } };
+    await load();
+    setInterval(load, 60e3);
+  });
+})();
+</script>
+</body>
+</html>

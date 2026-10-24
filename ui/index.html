@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesla</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    /* the shell hands over --bg --ink --ink-faint --accent --line (and
+       --card when it has one); these are the stand-alone defaults */
+    --bg: #faf7f2; --ink: #2a2420; --ink-faint: #6b625b; --accent: #c8642c; --line: #e6ded3;
+    --surface: color-mix(in srgb, var(--ink) 4%, var(--bg));
+    --faint-ink: color-mix(in srgb, var(--ink-faint) 72%, var(--ink)); /* secondary text, still legible */
+    --ok: #2f8a5b; --warn: #b7791f; --bad: #c0462f;
+    /* status text: the hue pulled toward the ink, so it reads on light and dark */
+    --ok-ink: color-mix(in srgb, var(--ok) 72%, var(--ink));
+    --warn-ink: color-mix(in srgb, var(--warn) 72%, var(--ink));
+    --bad-ink: color-mix(in srgb, var(--bad) 72%, var(--ink));
+    --serif: ui-serif, "Iowan Old Style", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-framed]) {
+      --bg: #16130f; --ink: #efe7dc; --ink-faint: #a39889; --accent: #e8833a; --line: #352e26;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font: 15px/1.55 var(--sans); padding: 20px 16px 32px; }
+  main { max-width: 760px; margin: 0 auto; }
+  .eyebrow { font: 600 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint-ink); }
+  h1 { font: 600 30px/1.15 var(--serif); margin: 6px 0 6px; }
+  .lede { margin: 0 0 14px; color: var(--faint-ink); max-width: 60ch; }
+  .notice { border: 1px solid var(--line); border-left: 3px solid var(--warn); background: var(--card, var(--surface));
+            border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-size: 14px; }
+  .notice.bad { border-left-color: var(--bad); }
+  .notice.ok { border-left-color: var(--ok); }
+  .notice ul { margin: 6px 0 0; padding-left: 18px; }
+  ol.steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px; }
+  .step { background: var(--card, var(--surface)); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 16px; }
+  .step.current { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+  .step-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .num { font: 600 13px/1 var(--mono); color: var(--faint-ink); min-width: 1.4em; }
+  .step h2 { font: 600 18px/1.3 var(--serif); margin: 0; flex: 1 1 auto; }
+  .badge { font: 600 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px;
+           border: 1px solid var(--line); color: var(--faint-ink); white-space: nowrap; }
+  .badge.done { color: var(--ok-ink); border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+  .badge.next { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+  .badge.wait { color: var(--warn-ink); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+  .badge.bad { color: var(--bad-ink); border-color: color-mix(in srgb, var(--bad) 45%, transparent); background: color-mix(in srgb, var(--bad) 8%, transparent); }
+  .body { margin-top: 8px; }
+  .body p { margin: 6px 0; }
+  .faint { color: var(--faint-ink); }
+  .small { font-size: 13px; }
+  .err { color: var(--bad-ink); }
+  .okc { color: var(--ok-ink); }
+  .kv { display: grid; grid-template-columns: minmax(7.5em, max-content) 1fr; gap: 6px 12px; margin: 10px 0; align-items: start; }
+  .kv dt { color: var(--faint-ink); font-size: 13px; padding-top: 6px; }
+  .kv dd { margin: 0; min-width: 0; }
+  .copy { display: flex; gap: 6px; align-items: stretch; min-width: 0; }
+  .copy code { flex: 1 1 auto; min-width: 0; font: 13px/1.4 var(--mono); background: color-mix(in srgb, var(--ink) 5%, transparent);
+               border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; overflow-wrap: anywhere; user-select: all; }
+  button { font: 600 14px/1 var(--sans); border-radius: 9px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--line);
+           background: transparent; color: var(--ink); min-height: 36px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.small { font-size: 12px; padding: 6px 9px; min-height: 30px; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  input[type=password], input[type=text] { font: 14px var(--mono); padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line);
+           background: var(--bg); color: var(--ink); min-width: 0; flex: 1 1 14em; }
+  .confirm { border: 1px solid color-mix(in srgb, var(--bad) 40%, var(--line)); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+  .cars { display: grid; gap: 10px; margin-top: 10px; }
+  .car { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .car-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+  .car-name { font: 600 15px var(--serif); }
+  .mono { font-family: var(--mono); font-size: 13px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-faint); margin-right: 6px; vertical-align: 1px; }
+  .dot.on { background: var(--ok); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--faint-ink); font-size: 13px; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -1px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+  .warnc { color: var(--warn-ink); }
+  .costbox { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 10px 0; }
+  .costhead { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+  .meter { position: relative; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 9%, transparent); margin: 8px 0 4px; }
+  .meter i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 4px; }
+  .meter u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .55; transform: translateX(-1px); }
+  footer { margin-top: 18px; color: var(--faint-ink); font-size: 12px; font-family: var(--mono); }
+  @media (max-width: 520px) {
+    body { padding: 14px 12px 24px; }
+    h1 { font-size: 26px; }
+    .kv { grid-template-columns: 1fr; gap: 2px; }
+    .kv dt { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow">ember · htesla</span>
+  <h1>Tesla</h1>
+  <p class="lede">Reads your Tesla's driving, location, charging and software data from Tesla's servers and the car's own data stream.
+    Read-only — it can't unlock, drive or command the car.</p>
+  <div id="banners"><p class="faint"><span class="spinner"></span>waiting for Hearthloom…</p></div>
+
+  <ol class="steps">
+    <li class="step" id="s1">
+      <div class="step-head"><span class="num">1</span><h2>Your app's key</h2><span class="badge" data-badge></span></div>
+      <div class="body" data-body></div>
+    </li>
+    <li class="step" id="s2">
+      <div class="step-head"><span class="num">2</span><h2>Your Tesla developer app</h2><span class="badge" data-badge></span></div>
+      <div class="body">
+        <div data-body></div>
+        <!-- not a <form>: the sandbox (no allow-forms) blocks submission -->
+        <div id="secret-form" class="actions">
+          <label class="small faint" for="secret" style="flex-basis:100%">Client secret (sealed on this node; this page can save it but never read it back)</label>
+          <input type="password" id="secret" name="secret" placeholder="ta-secret.…" autocomplete="off" spellcheck="false">
+          <button type="button" class="primary" id="secret-save">Save secret</button>
+          <span class="small" id="secret-note" role="status"></span>
+        </div>
+      </div>
+    </li>
+    <li class="step" id="s3">
+      <div class="step-head"><span class="num">3</span><h2>Register this address with Tesla</h2><span class="badge" data-badge></span></div>
+      <div class="body" data-body></div>
+    </li>
+    <li class="step" id="s4">
+      <div class="step-head"><span class="num">4</span><h2>Sign in to Tesla</h2><span class="badge" data-badge></span></div>
+      <div class="body" data-body></div>
+    </li>
+    <li class="step" id="s5">
+      <div class="step-head"><span class="num">5</span><h2>Pair your car</h2><span class="badge" data-badge></span></div>
+      <div class="body" data-body></div>
+    </li>
+    <li class="step" id="s6">
+      <div class="step-head"><span class="num">6</span><h2>Start streaming</h2><span class="badge" data-badge></span></div>
+      <div class="body" data-body></div>
+    </li>
+  </ol>
+  <footer id="foot"></footer>
+</main>
+<script src="hearth.js"></script>
+<script src="setup.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{
+  "protocol": 1,
+  "name": "htesla",
+  "version": "0.2.0",
+  "publisher": "jon",
+  "description": "Reads your Tesla's driving, location, charging and software data from Tesla's servers and the car's own data stream; read-only — it can't unlock, drive or command the car.",
+  "scopes": [
+    "ingest",
+    "notify"
+  ],
+  "placement": "cloud",
+  "sync": "local-only",
+  "requires": {
+    "host": ">=0.5.71"
+  },
+  "launch": {
+    "x86_64-unknown-linux-gnu": "bin/htesla-linux-amd64",
+    "aarch64-unknown-linux-gnu": "bin/htesla-linux-arm64",
+    "aarch64-apple-darwin": "bin/htesla-darwin-arm64",
+    "x86_64-apple-darwin": "bin/htesla-darwin-amd64"
+  },
+  "publish": [
+    {
+      "path": "/.well-known/appspecific/com.tesla.3p.public-key.pem",
+      "file": "tesla/public-key.pem",
+      "type": "application/x-pem-file"
+    }
+  ],
+  "ui": {
+    "hamburger": [
+      {
+        "label": "Tesla",
+        "page": "index.html"
+      }
+    ],
+    "card": [
+      {
+        "label": "Set up your Tesla",
+        "page": "index.html"
+      },
+      {
+        "label": "Drives",
+        "page": "drives.html"
+      }
+    ],
+    "visualize": [
+      {
+        "label": "Drives",
+        "page": "drives.html"
+      }
+    ],
+    "desk": [
+      {
+        "label": "your Tesla",
+        "page": "widget.html",
+        "height": 170
+      }
+    ]
+  },
+  "config": [
+    {
+      "key": "public_origin",
+      "label": "this node's public address",
+      "type": "string",
+      "help": "this node's public address, e.g. https://yourname.hearthlaunch.com — must match the Allowed Origin in your Tesla app"
+    },
+    {
+      "key": "client_id",
+      "label": "Tesla app Client ID",
+      "type": "string",
+      "help": "from your app at developer.tesla.com (the client secret is entered on the Tesla page, where it is sealed)"
+    },
+    {
+      "key": "region",
+      "label": "Tesla region",
+      "type": "string",
+      "default": "na",
+      "help": "na | eu — na covers North America and Asia-Pacific; eu covers Europe, the Middle East and Africa"
+    },
+    {
+      "key": "telemetry_port",
+      "label": "telemetry port",
+      "type": "number",
+      "default": 8443,
+      "help": "the port your car streams to (this node must accept TCP on it from the internet, passed straight through — the car's TLS ends in the ember)"
+    },
+    {
+      "key": "timezone",
+      "label": "time zone for drives and charges",
+      "type": "string",
+      "help": "an IANA zone name like America/New_York — drives, charges and updates are dated in it (blank = this node's own zone, UTC on hosted nodes)"
+    }
+  ]
+}

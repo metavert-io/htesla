@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drives</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  body { padding: 20px 16px 32px; }
+  main { max-width: 900px; margin: 0 auto; }
+  .eyebrow { font: 600 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint-ink); }
+  h1 { font: 600 28px/1.15 var(--serif); margin: 6px 0 4px; }
+  h2 { font: 600 17px/1.3 var(--serif); margin: 0 0 8px; }
+  .lede { margin: 0 0 14px; color: var(--faint-ink); }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 6px 0 16px; }
+  .stat b { display: block; font: 600 20px/1.2 var(--serif); }
+  .stat span { font-size: 12px; color: var(--faint-ink); }
+  .panel { background: var(--card, var(--surface)); border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 12px; margin-bottom: 12px; min-width: 0; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } .grid .panel { margin-bottom: 0; } }
+  svg { display: block; width: 100%; height: auto; }
+  .route { fill: none; stroke: var(--chart-1, var(--accent)); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .38; vector-effect: non-scaling-stroke; }
+  .route.sel { opacity: 1; stroke-width: 3; stroke: var(--chart-2, #2e756d); }
+  .end { fill: var(--bg); stroke: var(--ink); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+  .lbl { font: 600 11px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+  .axis { stroke: var(--line); stroke-width: 1; }
+  .grid-l { stroke: var(--line); stroke-opacity: .55; stroke-width: 1; }
+  .tick { font: 10px var(--mono); fill: var(--faint-ink); }
+  .dot { fill: var(--chart-1, var(--accent)); opacity: .8; }
+  .cell { fill: var(--chart-heat, var(--accent)); }
+  .cell0 { fill: color-mix(in srgb, var(--ink) 7%, transparent); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint-ink); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+  td { padding: 7px 6px; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); vertical-align: top; }
+  tr.drive { cursor: pointer; }
+  tr.drive:hover td, tr.drive.sel td { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+  td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .hide-s { }
+  @media (max-width: 520px) { .hide-s { display: none; } body { padding: 14px 12px 24px; } h1 { font-size: 24px; } }
+  .empty { padding: 18px 4px; color: var(--faint-ink); }
+  .note { font-size: 12px; color: var(--faint-ink); margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow">htesla · visualize</span>
+  <h1>Drives</h1>
+  <p class="lede">Every drive your car streamed — routes drawn from its own GPS, no map service involved.</p>
+  <div id="stats" class="stats"></div>
+  <section class="panel"><h2>Routes</h2><div id="map"><p class="faint"><span class="spinner"></span>loading…</p></div>
+    <p class="note" id="map-note"></p></section>
+  <div class="grid">
+    <section class="panel"><h2>Drives per day</h2><div id="heat"></div></section>
+    <section class="panel"><h2>Efficiency vs outside temperature</h2><div id="scatter"></div></section>
+  </div>
+  <section class="panel" style="margin-top:12px"><h2>Recent drives</h2><div id="list"></div></section>
+</main>
+<script src="hearth.js"></script>
+<script src="drives.js"></script>
+</body>
+</html>

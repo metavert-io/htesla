@@ -1,0 +1,9 @@
+dist/
+*.zip
+# never commit credentials or local env files
+*.env
+.env*
+tesla.env
+.ember-signing.key
+*.pem
+!third_party/**/*.pem
