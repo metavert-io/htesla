@@ -52,7 +52,7 @@ tell.
 
 ## What you need
 
-1. **A Hearthloom always-on node, version 0.5.71 or later**, with a
+1. **A Hearthloom always-on node, version 0.5.72 or later**, with a
    public HTTPS address: for example a hosted node at
    `https://yourname.hearthlaunch.com`. The ember runs on that node (its
    placement is `cloud`).

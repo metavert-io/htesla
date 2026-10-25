@@ -11,7 +11,7 @@
   "placement": "cloud",
   "sync": "local-only",
   "requires": {
-    "host": ">=0.5.71"
+    "host": ">=0.5.72"
   },
   "launch": {
     "x86_64-unknown-linux-gnu": "bin/htesla-linux-amd64",
