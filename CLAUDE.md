@@ -15,6 +15,14 @@ go test -count=1 ./...        # Go 1.26; prefix GOTOOLCHAIN=local if a newer too
 hearthloom ember validate dist   # the daemon's own manifest parser
 ```
 
+GitHub Actions runs the Go checks, `./build.sh` and govulncheck for every
+push to `main` and every pull request: check `gh run list` after pushing.
+Build release packages with the newest Go 1.26 patch release (`go
+version`, then `go run golang.org/x/vuln/cmd/govulncheck@latest ./...`):
+the binaries carry the standard library they were built with, so an old
+patch release ships its known vulnerabilities, and CI, which uses the
+newest patch, can't see them.
+
 UI changes need a real browser check. Use Playwright driving installed
 Chrome (`chromium.launch({ channel: "chrome", headless: true })`):
 - load the pages through the dashboard (`#/plugin/htesla/<page>`)
