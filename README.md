@@ -1,6 +1,7 @@
 # htesla — your Tesla's drives, charging and software history, in your own memory
 
-`htesla` is an **ember** (a plugin) for **Hearthloom**, a local-first
+`htesla` is an **ember** (a plugin) for
+[**Hearthloom**](https://github.com/metavert-io/hearthloom), a local-first
 personal memory system. It reads your car's data **straight from Tesla**
 and adds it to your Hearthloom record:
 
@@ -52,7 +53,9 @@ tell.
 
 ## What you need
 
-1. **A Hearthloom always-on node, version 0.5.72 or later**, with a
+1. **A [Hearthloom](https://github.com/metavert-io/hearthloom) always-on
+   node, version 0.5.72 or later** (the first release with the ember
+   support htesla uses), with a
    public HTTPS address: for example a hosted node at
    `https://yourname.hearthlaunch.com`. The ember runs on that node (its
    placement is `cloud`).

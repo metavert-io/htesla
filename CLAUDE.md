@@ -89,7 +89,8 @@ Chrome (`chromium.launch({ channel: "chrome", headless: true })`):
 
 ## The Hearthloom contract it depends on
 
-htesla needs Hearthloom **0.5.72 or later** (`requires.host` in the
+htesla needs [Hearthloom](https://github.com/metavert-io/hearthloom)
+**0.5.72 or later** (`requires.host` in the
 manifest). The public 0.5.71 release (schema 59) predates all of these
 APIs; installing on it would pass the version gate and then fail, so
 never lower the requirement below the first release that ships them.
