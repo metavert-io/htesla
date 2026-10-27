@@ -3,13 +3,16 @@
 # which fails on known vulnerabilities the code can actually reach,
 # including ones in the Go standard library. CI uses the newest Go 1.26
 # patch release; a release built with an older patch can carry
-# standard-library vulnerabilities this job no longer sees.
+# standard-library vulnerabilities this job no longer sees. The weekly run
+# catches newly published vulnerabilities between pushes.
 name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "17 6 * * 1"
   workflow_dispatch:
 
 permissions:

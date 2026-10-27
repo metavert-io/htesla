@@ -228,7 +228,7 @@ What reaches your record: drives (through Hearthloom's movement layer),
 
 ## Status
 
-htesla 0.2.0 is new. Its parts are unit-tested and it has been run end to
+htesla 0.2 is new. Its parts are unit-tested and it has been run end to
 end against a Hearthloom node with replayed telemetry. It has not yet
 been run against a real car. Two things that only a real car can confirm:
 - whether every car accepts the private certificate authority htesla

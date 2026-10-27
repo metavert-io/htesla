@@ -2,6 +2,8 @@ module github.com/metavert-io/htesla
 
 go 1.26.0
 
+toolchain go1.26.10
+
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.3.0

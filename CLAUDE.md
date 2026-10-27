@@ -10,18 +10,21 @@ depends on, how to test without a car, and how to release.
 ```bash
 go build ./...
 go vet ./...
-go test -count=1 ./...        # Go 1.26; prefix GOTOOLCHAIN=local if a newer toolchain gets fetched
+go test -count=1 ./...        # Go 1.26 (go.mod's toolchain line sets the patch release)
 ./build.sh                    # → dist/ (linux amd64/arm64, darwin arm64/amd64; CGO off, static)
+go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 hearthloom ember validate dist   # the daemon's own manifest parser
 ```
 
 GitHub Actions runs the Go checks, `./build.sh` and govulncheck for every
-push to `main` and every pull request: check `gh run list` after pushing.
-Build release packages with the newest Go 1.26 patch release (`go
-version`, then `go run golang.org/x/vuln/cmd/govulncheck@latest ./...`):
-the binaries carry the standard library they were built with, so an old
-patch release ships its known vulnerabilities, and CI, which uses the
-newest patch, can't see them.
+push to `main`, every pull request and once a week: check `gh run list`
+after pushing. The binaries carry the standard library they were built
+with, so an old Go patch release ships its known vulnerabilities (0.2.0
+was built with go1.26.4: 16 of them). go.mod's `toolchain` line is the
+floor: an older local Go fetches that release and builds with it. Don't
+override it with `GOTOOLCHAIN=local` on an older Go, and when govulncheck
+reports a standard-library fix, raise the line to the release that has
+it (`go mod edit -toolchain=go1.26.N`).
 
 UI changes need a real browser check. Use Playwright driving installed
 Chrome (`chromium.launch({ channel: "chrome", headless: true })`):

@@ -1,7 +1,7 @@
 {
   "protocol": 1,
   "name": "htesla",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "jon",
   "description": "Reads your Tesla's driving, location, charging and software data from Tesla's servers and the car's own data stream; read-only — it can't unlock, drive or command the car.",
   "scopes": [

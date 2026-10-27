@@ -3,9 +3,16 @@
    base, palette} into this iframe on load; `window.hearth` resolves
    with a tiny client bound to that token — the ONLY authority this
    page has. The token can set the ember's secrets but never read them
-   back, and it cannot reach Tesla: the sidecar does that. */
+   back, and it cannot reach Tesla: the sidecar does that. Messages
+   count only when they come from the window that embeds us (the
+   dashboard shell): any other window that can reach this page (one that
+   opened it, say) could otherwise hand it a `base` of its own and
+   receive the secrets typed into it. */
+const fromShell = (ev) => window.parent !== window && ev.source === window.parent;
+
 window.hearth = new Promise((resolve) => {
   addEventListener("message", (ev) => {
+    if (!fromShell(ev)) return;
     const d = ev.data;
     if (!d || d.type !== "hearthloom") return;
     for (const [k, v] of Object.entries(d.palette || {})) {
