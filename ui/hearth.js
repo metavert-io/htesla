@@ -8,7 +8,12 @@
    dashboard shell): any other window that can reach this page (one that
    opened it, say) could otherwise hand it a `base` of its own and
    receive the secrets typed into it. */
-const fromShell = (ev) => window.parent !== window && ev.source === window.parent;
+// Two checks: the message comes from the window that embeds us, and that
+// window is the dashboard's own origin (the page and the dashboard are
+// served by the same node). The source check alone would accept a site
+// that frames this page itself.
+const fromShell = (ev) =>
+  window.parent !== window && ev.source === window.parent && ev.origin === location.origin;
 
 window.hearth = new Promise((resolve) => {
   addEventListener("message", (ev) => {
